@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Cat Image Gallery</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        /* Reset some */
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: rgb(144, 126, 167);
+            min-height: 100vh;
+            color: #2e2e2e;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 15px;
+            font-weight: 700;
+            font-size: 2.8rem;
+            letter-spacing: 1px;
+            color: #fff;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.25);
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+            gap: 20px;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding-bottom: 40px;
+        }
+
+        .card {
+            background: #b69797ee;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(172, 152, 152, 0.12);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 200px;
+        }
+
+        .card:hover {
+            transform: scale(1.15);
+            box-shadow: 0 14px 30px rgba(236, 219, 219, 0.25);
+        }
+
+        .card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 15px;
+            user-select: none;
+            pointer-events: none;
+            transition: transform 0.4s ease;
+        }
+
+        .card:hover img {
+            transform: scale(1.1);
+        }
+
+        .reload-btn {
+            display: block;
+            margin: 0 auto 30px;
+            padding: 14px 32px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #0ba29d;
+            background: #fff;
+            border: 2.5px solid #0ba29d;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(4, 43, 41, 0.3);
+            transition: background-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+            user-select: none;
+            letter-spacing: 0.5px;
+        }
+
+        .reload-btn:hover {
+            background-color: #0ba29d;
+            color: white;
+            box-shadow: 0 6px 25px rgba(11, 162, 157, 0.6);
+        }
+
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .reload-btn {
+                font-size: 16px;
+                padding: 12px 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Cat Image Gallery 😹</h1>
+    <button class="reload-btn">Load More Cats </button>
+
+    <div class="gallery" id="catGallery">
+       
+    </div>
+
+    <script>
+        const gallery = document.getElementById('catGallery');
+        const reloadBtn = document.querySelector('.reload-btn');
+
+        function loadCats() {
+            gallery.innerHTML = ''; 
+            const loadingMsg = document.createElement('p');
+            loadingMsg.textContent = 'Loading 🐱🐱🐱';
+            loadingMsg.style.textAlign = 'center';
+            loadingMsg.style.color = '#fff';
+            loadingMsg.style.fontWeight = '600';
+            gallery.appendChild(loadingMsg);
+
+            axios.get('https://api.thecatapi.com/v1/images/search?limit=10')
+                .then(response => {
+                    gallery.innerHTML = ''; 
+                    const cats = response.data;
+
+                    cats.forEach(cat => {
+                        const card = document.createElement('div');
+                        card.className = 'card';
+
+                        const img = document.createElement('img');
+                        img.src = cat.url;
+                        img.alt = 'Cute Cat';
+
+                        card.appendChild(img);
+                        gallery.appendChild(card);
+                    });
+                })
+                .catch(error => {
+                    gallery.innerHTML = '<p style="color:white; text-align:center;">Failed to load images. Please try again.</p>';
+                    console.error('Error loading cat images:', error);
+                });
+        }
+
+        reloadBtn.addEventListener('click', loadCats);
+
+        
+        loadCats();
+    </script>
+
+</body>
+</html>
